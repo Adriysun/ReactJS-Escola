@@ -5,7 +5,7 @@ import Main from '../template/Main';
 
 const title = "Cadastro de Alunos";
 
-const urlAPI = "http://localhost:5176/api/aluno";
+const urlAPI = "http://localhost:5222/api/aluno";
 const initialState = {
     aluno: { id: 0, ra: '', nome: '', codCurso: 0 },
     lista: []
@@ -37,17 +37,19 @@ export default class CrudAluno extends Component {
     salvar() {
         const aluno = this.state.aluno;
         aluno.codCurso = Number(aluno.codCurso);
-        const metodo = 'post';
-        axios[metodo](urlAPI, aluno)
+        const metodo = aluno.id ? 'put' : 'post';
+        const url = aluno.id ? `${urlAPI}/${aluno.id}` : urlAPI;
+
+        axios[metodo](url, aluno)
             .then(resp => {
                 const lista = this.getListaAtualizada(resp.data)
                 this.setState({ aluno: initialState.aluno, lista })
             })
     }
 
-    getListaAtualizada(aluno) {
+    getListaAtualizada(aluno, add = true) {
         const lista = this.state.lista.filter(a => a.id !== aluno.id);
-        lista.unshift(aluno);
+        if (add) lista.unshift(aluno);
         return lista;
     }
     atualizaCampo(event) {
@@ -79,6 +81,8 @@ export default class CrudAluno extends Component {
             <div className="inclui-container">
                 <label> RA: </label>
                 <input
+
+            
                     type="text"
                     id="ra"
                     placeholder="RA do aluno"
