@@ -2,6 +2,7 @@ import React from 'react';
 import { Routes, Route } from "react-router-dom";
 import Main from './components/template/Main';
 import CrudAluno from './components/CrudAluno/CrudAluno';
+import CrudCurso from './components/CrudCurso/CrudCurso';
 
 export default function Rotas() {
     return (
@@ -13,7 +14,8 @@ export default function Rotas() {
                     </Main>}
             />
             <Route path='/alunos' element={<CrudAluno />} />
-            Página 23
+            <Route path='/cursos' element={<CrudCurso />} />
+            
             <Route path='*' element={
 
                 <Main title="Bem Vindo!">
