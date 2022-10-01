@@ -2,13 +2,18 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import './CrudAluno.css';
 import Main from '../template/Main';
+import '../CrudCurso/CrudCurso.js';
 
 const title = "Cadastro de Alunos";
 
 const urlAPI = "http://localhost:5222/api/aluno";
+const urlAPICurso = "http://localhost:5222/api/curso";
+
 const initialState = {
     aluno: { id: 0, ra: '', nome: '', codCurso: 0 },
-    lista: []
+    curso: { id: 0, codCurso: 0, nomeCurso: '', periodo:'', },
+    lista: [],
+    listaCurso: [],
 }
 
 /*const Alunos = [
@@ -27,7 +32,11 @@ export default class CrudAluno extends Component {
         axios(urlAPI).then(resp => {
             this.setState({ lista: resp.data })
         })
+        axios(urlAPICurso).then(resp => {
+            this.setState({ listaCurso: resp.data })
+        })
     }
+    
 
     limpar() {
         this.setState({ aluno: initialState.aluno });
@@ -106,16 +115,14 @@ export default class CrudAluno extends Component {
                     onChange={e => this.atualizaCampo(e)}
                 />
                 <label> Código do Curso: </label>
-                <input
-                    type="number"
-                    id="codCurso"
-                    placeholder="0"
-                    className="form-input"
-                    name="codCurso"
-
-                    value={this.state.aluno.codCurso}
+                
+                <select name="nomeCurso">
+                    {this.state.listaCurso.map((curso) =>
+                        <option>{curso.nomeCurso}</option>
+                    )}
                     onChange={e => this.atualizaCampo(e)}
-                />
+                </select>
+
                 <button className="btnSalvar"
                     onClick={e => this.salvar(e)} >
                     Salvar
@@ -137,6 +144,8 @@ export default class CrudAluno extends Component {
                             <th className="tabTituloRa">Ra</th>
                             <th className="tabTituloNome">Nome</th>
                             <th className="tabTituloCurso">Curso</th>
+                            <th></th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
