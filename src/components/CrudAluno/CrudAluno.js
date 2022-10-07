@@ -33,6 +33,7 @@ export default class CrudAluno extends Component {
             this.setState({ lista: resp.data })
         })
         axios(urlAPICurso).then(resp => {
+            console.log(resp.data)
             this.setState({ listaCurso: resp.data })
         })
     }
@@ -44,16 +45,20 @@ export default class CrudAluno extends Component {
 
 
     salvar() {
-        const aluno = this.state.aluno;
-        aluno.codCurso = Number(aluno.codCurso);
-        const metodo = aluno.id ? 'put' : 'post';
-        const url = aluno.id ? `${urlAPI}/${aluno.id}` : urlAPI;
 
+        let EscolheCurso = document.getElementById('EscolheCurso').value; 
+        const aluno = this.state.aluno;
+        
+        aluno.codCurso = Number(EscolheCurso);     
+        const metodo = aluno.id ? 'put' : 'post';    
+        const url = aluno.id ? `${urlAPI}/${aluno.id}` : urlAPI;
         axios[metodo](url, aluno)
             .then(resp => {
                 const lista = this.getListaAtualizada(resp.data)
                 this.setState({ aluno: initialState.aluno, lista })
             })
+
+       
     }
 
     getListaAtualizada(aluno, add = true) {
@@ -102,6 +107,7 @@ export default class CrudAluno extends Component {
 
                     onChange={e => this.atualizaCampo(e)}
                 />
+
                 <label> Nome: </label>
                 <input
                     type="text"
@@ -114,19 +120,25 @@ export default class CrudAluno extends Component {
 
                     onChange={e => this.atualizaCampo(e)}
                 />
+                
+                
                 <label> Código do Curso: </label>
                 
-                <select name="nomeCurso">
+                <select
+                id="EscolheCurso"
+                name="codCurso">
                     {this.state.listaCurso.map((curso) =>
-                        <option>{curso.nomeCurso}</option>
+                        <option key={curso.id} value={curso.codCurso}>{curso.nomeCurso}</option>
                     )}
-                    onChange={e => this.atualizaCampo(e)}
                 </select>
+
+
 
                 <button className="btnSalvar"
                     onClick={e => this.salvar(e)} >
                     Salvar
                 </button>
+
                 <button className="btnCancelar"
                     onClick={e => this.limpar(e)} >
                     Cancelar
@@ -150,7 +162,7 @@ export default class CrudAluno extends Component {
                     </thead>
                     <tbody>
                         {this.state.lista.map(
-                            (aluno) =>
+                            (aluno, curso) =>
 
                                 <tr key={aluno.id}>
                                     <td>{aluno.ra}</td>
@@ -158,12 +170,12 @@ export default class CrudAluno extends Component {
                                     <td>{aluno.codCurso}</td>
                                     <td>
                                         <button onClick={() => this.carregar(aluno)} >
-                                            Altera
+                                            Alterar
                                         </button>
                                     </td>
                                     <td>
                                         <button onClick={() => this.remover(aluno)} >
-                                            Remove
+                                            Remover
                                         </button>
                                     </td>
                                 </tr>

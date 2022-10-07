@@ -74,8 +74,6 @@ export default class CrudCurso extends Component {
             <div className="inclui-container">
                 <label> Código do Curso: </label>
                 <input
-
-            
                     type="number"
                     id="codCurso"
                     placeholder="Curso do aluno"
