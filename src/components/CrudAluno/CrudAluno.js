@@ -11,7 +11,7 @@ const urlAPICurso = "http://localhost:5222/api/curso";
 
 const initialState = {
     aluno: { id: 0, ra: '', nome: '', codCurso: 0 },
-    curso: { id: 0, codCurso: 0, nomeCurso: '', periodo:'', },
+    curso: { id: 0, codCurso: 0, nomeCurso: '', periodo: '', },
     lista: [],
     listaCurso: [],
 }
@@ -23,65 +23,85 @@ const initialState = {
     { 'id': 4, 'ra': 44444, 'nome': 'Alice', 'codCurso': 59 },
 ];
 */
+const user = JSON.parse(localStorage.getItem("user"));
 
 export default class CrudAluno extends Component {
 
     state = { ...initialState }
 
     componentDidMount() {
-        axios(urlAPI).then(resp => {
+        /*axios(urlAPI).then(resp => {
             this.setState({ lista: resp.data })
         })
         axios(urlAPICurso).then(resp => {
             console.log(resp.data)
             this.setState({ listaCurso: resp.data })
         })
-    }
-    
+        */
+
+        axios(urlAPI, { headers: { Authorization: 'Bearer ' + user.token } })
+            .then(resp => {
+                this.setState({ lista: resp.data });
+            },
+        axios(urlAPICurso, { headers: { Authorization: 'Bearer ' + user.token } })
+            .then(resp => {
+                this.setState({ listaCurso: resp.data });
+            },
+                (error) => {
+                    const _mens =
+                        (error.response &&
+                            error.response.data &&
+                            error.response.data.message) ||
+                        error.message ||
+                        error.toString();
+                    this.setState({ mens: _mens });
+                })
+            )};
+
 
     limpar() {
-        this.setState({ aluno: initialState.aluno });
-    }
+                this.setState({ aluno: initialState.aluno });
+            }
 
 
     salvar() {
 
-        let EscolheCurso = document.getElementById('EscolheCurso').value; 
-        const aluno = this.state.aluno;
-        
-        aluno.codCurso = Number(EscolheCurso);     
-        const metodo = aluno.id ? 'put' : 'post';    
-        const url = aluno.id ? `${urlAPI}/${aluno.id}` : urlAPI;
-        axios[metodo](url, aluno)
-            .then(resp => {
-                const lista = this.getListaAtualizada(resp.data)
-                this.setState({ aluno: initialState.aluno, lista })
-            })
+                let EscolheCurso = document.getElementById('EscolheCurso').value;
+                const aluno = this.state.aluno;
 
-       
-    }
+                aluno.codCurso = Number(EscolheCurso);
+                const metodo = aluno.id ? 'put' : 'post';
+                const url = aluno.id ? `${urlAPI}/${aluno.id}` : urlAPI;
+                axios[metodo](url, aluno)
+            .then(resp => {
+                    const lista = this.getListaAtualizada(resp.data)
+                    this.setState({ aluno: initialState.aluno, lista })
+                })
+
+
+            }
 
     getListaAtualizada(aluno, add = true) {
-        const lista = this.state.lista.filter(a => a.id !== aluno.id);
-        if (add) lista.unshift(aluno);
-        return lista;
-    }
+                const lista = this.state.lista.filter(a => a.id !== aluno.id);
+                if(add) lista.unshift(aluno);
+                return lista;
+            }
     atualizaCampo(event) {
-        //clonar usuário a partir do state, para não alterar o state diretamente
-        const aluno = { ...this.state.aluno };
-        //usar o atributo NAME do input identificar o campo a ser atualizado
-        aluno[event.target.name] = event.target.value;
-        //atualizar o state
-        this.setState({ aluno });
-    }
+                //clonar usuário a partir do state, para não alterar o state diretamente
+                const aluno = { ...this.state.aluno };
+                //usar o atributo NAME do input identificar o campo a ser atualizado
+                aluno[event.target.name] = event.target.value;
+                //atualizar o state
+                this.setState({ aluno });
+            }
 
     carregar(aluno) {
-        this.setState({ aluno })
-    }
+                this.setState({ aluno })
+            }
 
     remover(aluno) {
-        const url = urlAPI + "/" + aluno.id;
-        if (window.confirm("Confirma remoção do aluno: " + aluno.ra)) {
+                const url = urlAPI + "/" + aluno.id;
+                if(window.confirm("Confirma remoção do aluno: " + aluno.ra)) {
             console.log("entrou no confirm");
             axios['delete'](url, aluno)
                 .then(resp => {
@@ -96,7 +116,7 @@ export default class CrudAluno extends Component {
                 <label> RA: </label>
                 <input
 
-            
+
                     type="text"
                     id="ra"
                     placeholder="RA do aluno"
@@ -120,13 +140,13 @@ export default class CrudAluno extends Component {
 
                     onChange={e => this.atualizaCampo(e)}
                 />
-                
-                
+
+
                 <label> Código do Curso: </label>
-                
+
                 <select
-                id="EscolheCurso"
-                name="codCurso">
+                    id="EscolheCurso"
+                    name="codCurso">
                     {this.state.listaCurso.map((curso) =>
                         <option key={curso.id} value={curso.codCurso}>{curso.nomeCurso}</option>
                     )}
@@ -189,9 +209,12 @@ export default class CrudAluno extends Component {
     render() {
         return (
             <Main title={title}>
-                {this.renderForm()}
-                {this.renderTable()}
+                {(this.mens)?
+                "Erro" + this.mens :
+                this.renderForm(),
+                this.renderTable()
+                }
             </Main>
         )
     }
-}
+    }
